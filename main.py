@@ -3,7 +3,6 @@ from fastapi import FastAPI, HTTPException
 import uvicorn
 from connection import MongoConnection
 from userscema import listusers_serial,userindvidual_serial
-from bson import objectid
 from models import  user,loginuser
 import jwt
 
