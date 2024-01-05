@@ -26,8 +26,8 @@ def loginUser(person:loginuser):
         token = jwt.encode({
             "id" : user["id"]
         },"secret","HS256")
-
-        Client["activeTokens"].insert_one({"token":token})
+        db_token=Client["activeTokens"].find_one({"token":token})
+        if db_token == None : Client["activeTokens"].insert_one({"token":token})
         return {"token":token}
     except Exception as e:
         print(e)
