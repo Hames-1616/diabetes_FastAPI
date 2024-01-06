@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 import uvicorn
 from connection import MongoConnection
 from userscema import listusers_serial,userindvidual_serial
@@ -32,3 +32,13 @@ def loginUser(person:loginuser):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=502, detail="DB connection failed")
+    
+@app.post("/signOut")
+def signout(token:str=Header()):
+    try:
+        db_token = Client["activeTokens"].find_one({"token":token})
+        if db_token == None : return "Not found" 
+        return "Deleted"
+    except Exception as e:
+        raise HTTPException(status_code=502, detail="DB connection failed")
+
