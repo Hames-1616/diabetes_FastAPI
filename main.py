@@ -5,6 +5,7 @@ from connection import MongoConnection
 from userscema import listusers_serial,userindvidual_serial
 from models import  user,loginuser
 import jwt
+from badrequestfunction import badrequest
 
 app = FastAPI()
 if __name__ == "__main__":
@@ -13,32 +14,33 @@ Client = MongoConnection()
 
 @app.post("/createUser") 
 def createUser(person:user):
-    try:
+        user = Client["users"].find_one({"email":person.email})
+        if user : badrequest("User Already Exists")
         Client["users"].insert_one(dict(person))
         return "User Registered"
-    except Exception:
-        raise HTTPException(status_code=502, detail="DB connection failed")
+
 
 @app.get("/login")
 def loginUser(person:loginuser):
-    try:
-        user = userindvidual_serial(Client["users"].find_one(dict(person)))
-        token = jwt.encode({
-            "id" : user["id"]
-        },"secret","HS256")
-        db_token=Client["activeTokens"].find_one({"token":token})
-        if db_token == None : Client["activeTokens"].insert_one({"token":token})
-        return {"token":token}
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=502, detail="DB connection failed")
+            user = Client["users"].find_one(dict(person))
+            if user:
+                user = userindvidual_serial(user)
+                token = jwt.encode({
+                "id" : user["id"]
+                },"secret","HS256")
+                db_token=Client["activeTokens"].find_one({"token":token})
+                if db_token == None : Client["activeTokens"].insert_one({"token":token})
+                return {"token":token}
+            else :
+                badrequest("User Not Found")
+      
+  
     
 @app.post("/signOut")
 def signout(token:str=Header()):
-    try:
         db_token = Client["activeTokens"].find_one({"token":token})
-        if db_token == None : return "Not found" 
+        if db_token == None : return badrequest("Not Found")
         return "Deleted"
-    except Exception as e:
-        raise HTTPException(status_code=502, detail="DB connection failed")
+
+        
 
