@@ -5,11 +5,9 @@ class user(BaseModel):
     email:str
     password:str
 
-
 class loginuser(BaseModel):
     email:str
     password:str
-
 
 class BasicUserInfo(BaseModel):
     gender:str
@@ -19,5 +17,3 @@ class BasicUserInfo(BaseModel):
 class dbUserInfo(BaseModel):
     info : BasicUserInfo
     email : str
-
-

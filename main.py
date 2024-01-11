@@ -1,8 +1,8 @@
 
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, Header
 import uvicorn
 from connection import MongoConnection
-from userscema import listusers_serial,userindvidual_serial
+from userscema import userindvidual_serial
 from models import *
 import jwt
 from badrequestfunction import badrequest
@@ -43,16 +43,14 @@ def signout(token:str=Header()):
         return "Deleted"
 
 @app.post("/basicInfo")
-def UsermedDetails(userDetails:BasicUserInfo(),token:str=Header()):
+def UsermedDetails(userDetails:BasicUserInfo,token:str=Header()):
        usr:user = Client["activeTokens"].find_one({"token":token})
        if user : 
               user_details = Client["basicInfo"].find_one({"email":usr.email})
-              db_details = dbUserInfo(info=user_details,email=usr.email)
+              db_details = dbUserInfo(info=userDetails,email=usr.email)
               if user_details :
                      Client["basicInfo"].update_one(dict(db_details))
               else:
                      Client["basicInfo"].insert_one(dict(db_details))
        else:
               return badrequest("Session Not Valid")
-        
-
