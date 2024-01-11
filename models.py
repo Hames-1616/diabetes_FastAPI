@@ -10,3 +10,14 @@ class loginuser(BaseModel):
     email:str
     password:str
 
+
+class BasicUserInfo(BaseModel):
+    gender:str
+    variant : str
+    blood : str
+
+class dbUserInfo(BaseModel):
+    info : BasicUserInfo
+    email : str
+
+
