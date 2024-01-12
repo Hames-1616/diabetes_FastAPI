@@ -15,5 +15,5 @@ class BasicUserInfo(BaseModel):
     blood : str
 
 class dbUserInfo(BaseModel):
-    info : BasicUserInfo
+    info : dict
     email : str

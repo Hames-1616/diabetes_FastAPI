@@ -7,7 +7,9 @@ def MongoConnection():
     load_dotenv()
     db_url = os.getenv("DB")
     try:
-        Client = MongoClient(db_url)
+        Client = MongoClient(db_url
+                            #  ,tls=True,tlsAllowInvalidCertificates=True
+                             )
         db = Client.diabetes
         return db
     except Exception as e:

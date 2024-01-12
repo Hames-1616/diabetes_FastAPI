@@ -6,6 +6,7 @@ from userscema import userindvidual_serial
 from models import *
 import jwt
 from badrequestfunction import badrequest
+from bson import ObjectId
 
 app = FastAPI()
 if __name__ == "__main__":
@@ -44,13 +45,17 @@ def signout(token:str=Header()):
 
 @app.post("/basicInfo")
 def UsermedDetails(userDetails:BasicUserInfo,token:str=Header()):
-       usr:user = Client["activeTokens"].find_one({"token":token})
-       if user : 
-              user_details = Client["basicInfo"].find_one({"email":usr.email})
-              db_details = dbUserInfo(info=userDetails,email=usr.email)
-              if user_details :
-                     Client["basicInfo"].update_one(dict(db_details))
-              else:
-                     Client["basicInfo"].insert_one(dict(db_details))
+       usr = Client["activeTokens"].find_one({"token":token})
+       if usr :
+              user_id = jwt.decode(token,"secret","HS256")
+              user_details = userindvidual_serial(Client["users"].find_one({"_id":ObjectId(user_id["id"])}))
+              email = user_details["email"]
+              db_details = dict(dbUserInfo(info=dict(userDetails),email=user_details["email"]))
+              print(db_details)
+              existing_details = Client["basicInfo"].find_one({"email":email})
+              if existing_details :
+                     Client["basicInfo"].update_one({"email":email},{"$set":{"info":dict(userDetails)}},upsert=True)
+              else :
+                     Client["basicInfo"].insert_one(db_details)
        else:
               return badrequest("Session Not Valid")
