@@ -71,3 +71,5 @@ def userinfostatus(token:str=Header()):
                      return True
               else :
                      return badrequest("Details are Not present")
+       else :
+              return badrequest("Session is Not Valid")
