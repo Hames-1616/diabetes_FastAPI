@@ -59,3 +59,10 @@ def UsermedDetails(userDetails:BasicUserInfo,token:str=Header()):
                      Client["basicInfo"].insert_one(db_details)
        else:
               return badrequest("Session Not Valid")
+       
+@app.get("/basicInfoVerify")
+def userinfostatus(token:str=Header()):
+       usr = Client["activeTokens"].find_one({"token":token})
+       if usr :
+              user_id = jwt.decode(token,"secret","HS256")
+              userDetails = userindvidual_serial(Client[])
