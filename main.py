@@ -65,4 +65,9 @@ def userinfostatus(token:str=Header()):
        usr = Client["activeTokens"].find_one({"token":token})
        if usr :
               user_id = jwt.decode(token,"secret","HS256")
-              userDetails = userindvidual_serial(Client[])
+              userDetails = userindvidual_serial(Client["users"].find_one({"_id":ObjectId(user_id["id"])}))
+              basicinfoCheck = dict(Client["basicInfo"].find_one({"email":userDetails["email"]}))
+              if basicinfoCheck :
+                     return True
+              else :
+                     return badrequest("Details are Not present")
